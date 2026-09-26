@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Жиембет жырау - 7 сынып</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            /* Қою жасыл фон (Қобланды батыр стилі) */
+            background-color: #011a14; 
+            background-image: radial-gradient(circle at 50% 0%, #043a2b 0%, #011a14 70%, #01150e 100%);
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 40px;
+        }
+
+        h1, h2, h3, .futuristic-title {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .gold-text {
+            color: #fbbf24;
+            text-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+        }
+        
+        .futuristic-white {
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.6), 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .gold-border {
+            border: 1px solid #fbbf24;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.2), inset 0 0 10px rgba(251, 191, 36, 0.1);
+        }
+
+        .glass-panel {
+            background: rgba(4, 59, 44, 0.45);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(251, 191, 36, 0.35);
+            box-shadow: 0 8px 32px 0 rgba(1, 20, 15, 0.6);
+        }
+
+        .tab-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 2px;
+            background-color: #fbbf24;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .tab-btn.active {
+            color: #fbbf24;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
+            background: linear-gradient(to top, rgba(251, 191, 36, 0.15), transparent);
+        }
+        .tab-btn.active::after {
+            transform: scaleX(1);
+        }
+        .tab-btn:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .info-card {
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s, z-index 0.4s;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+        .info-card:hover:not(.active-info-card) {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+        .info-card.active-info-card {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 20px 50px rgba(251, 191, 36, 0.4);
+            z-index: 50;
+            background-color: rgba(2, 36, 27, 0.95);
+            border-color: #fbbf24;
+        }
+
+        /* Сюжеттік домино стилі */
+        .domino-scene {
+            perspective: 1200px;
+            padding: 40px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        .domino-board {
+            display: flex;
+            gap: 40px;
+            transform-style: preserve-3d;
+            transform: rotateX(15deg);
+            perspective: 1200px;
+        }
+        .domino-tile {
+            width: 150px;
+            height: 300px;
+            background: linear-gradient(135deg, rgba(6, 78, 59, 0.9), rgba(2, 36, 27, 0.95));
+            backdrop-filter: blur(10px);
+            border: 3px solid #fbbf24;
+            border-radius: 16px;
+            box-shadow: -15px 20px 30px rgba(1, 20, 15, 0.8), inset 0 0 25px rgba(251, 191, 36, 0.4);
+            position: relative;
+            transform: rotateY(-20deg) translateZ(0);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+        
+        .domino-tile:hover {
+            transform: rotateY(0deg) translateZ(50px) translateY(-25px) scale(1.15);
+            background: linear-gradient(135deg, rgba(4, 59, 44, 1), rgba(2, 36, 27, 1));
+            box-shadow: 0 30px 60px rgba(1, 20, 15, 0.9), inset 0 0 40px rgba(251, 191, 36, 0.6);
+            z-index: 20;
+        }
+
+        .domino-half {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            padding: 20px;
+            align-items: center;
+            justify-items: center;
+            position: relative;
+        }
+
+        .domino-divider {
+            height: 4px;
+            width: 85%;
+            margin: 0 auto;
+            background: #fbbf24;
+            box-shadow: 0 0 15px #fbbf24;
+            border-radius: 2px;
+            z-index: 5;
+        }
+
+        .pip {
+            width: 18px;
+            height: 18px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #10b981, inset 0 0 8px rgba(255, 255, 255, 0.9);
+            z-index: 5;
+        }
+
+        /* Pip Grid Positions */
+        .pip-center { grid-column: 2; grid-row: 2; }
+        .pip-tl { grid-column: 1; grid-row: 1; }
+        .pip-tr { grid-column: 3; grid-row: 1; }
+        .pip-bl { grid-column: 1; grid-row: 3; }
+        .pip-br { grid-column: 3; grid-row: 3; }
+
+        .domino-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5rem;
+            font-family: 'Playfair Display', serif;
+            font-weight: bold;
+            color: #fbbf24;
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.8);
+            z-index: 10;
+        }
+
+        .jeopardy-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            width: 100%;
+        }
+        .jeopardy-header {
+            background: linear-gradient(180deg, #043b2c, #01120d);
+            color: #ffffff;
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border: 2px solid #fbbf24;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(1, 20, 15, 0.6);
+            text-transform: uppercase;
+        }
+        .jeopardy-cell {
+            background: #02241b;
+            color: #fbbf24;
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            padding: 30px 10px;
+            border: 2px solid #fbbf24;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-shadow: 0 0 15px rgba(251, 191, 36, 0.8);
+            box-shadow: inset 0 0 20px rgba(4, 59, 44, 0.8);
+        }
+        .jeopardy-cell:hover:not(.played) {
+            background: #fbbf24;
+            color: #02241b;
+            text-shadow: none;
+            box-shadow: 0 0 20px #fbbf24;
+            transform: scale(1.05);
+        }
+        .jeopardy-cell.played {
+            opacity: 0.3;
+            cursor: default;
+            color: transparent;
+            text-shadow: none;
+        }
+
+        /* Модаль терезелер */
+        .modal-overlay {
+            background: rgba(1, 26, 20, 0.95);
+            backdrop-filter: blur(15px);
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #010a08; }
+        ::-webkit-scrollbar-thumb { background: #fbbf24; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+    </style>
+</head>
+<body class="flex flex-col">
+
+    <header class="glass-panel sticky top-0 z-50 border-b border-amber-500/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-feather-pointed text-amber-400 text-3xl drop-shadow-[0_0_12px_rgba(251,191,36,0.9)]"></i>
+                <div>
+                    <h1 class="text-2xl font-bold futuristic-title futuristic-white tracking-wide">Жиембет жырау</h1>
+                    <p class="text-emerald-300 text-sm font-semibold tracking-widest uppercase">Қазақ әдебиеті • 7-сынып</p>
+                </div>
+            </div>
+            
+            <nav class="flex justify-center gap-4 flex-wrap">
+                <button onclick="switchTab('main')" id="btn-main" class="tab-btn active px-6 py-3 rounded text-sm font-bold uppercase tracking-widest text-slate-200">
+                    <i class="fa-solid fa-scroll mr-2"></i>Жыр мәтіні
+                </button>
+                <button onclick="switchTab('domino')" id="btn-domino" class="tab-btn px-6 py-3 rounded text-sm font-bold uppercase tracking-widest text-slate-200">
+                    <i class="fa-solid fa-chess-board mr-2"></i>Сюжеттік домино
+                </button>
+                <button onclick="switchTab('game')" id="btn-game" class="tab-btn px-6 py-3 rounded text-sm font-bold uppercase tracking-widest text-slate-200">
+                    <i class="fa-solid fa-gamepad mr-2"></i>Толғау алаңы
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 relative">
+        
+        <section id="tab-main" class="block animate-fade-in space-y-8">
+            
+            <!-- Портрет және Биография блогы -->
+            <div class="flex flex-col lg:flex-row gap-8 items-stretch justify-center w-full">
+                <!-- Портрет (Фонға толық сіңісіп тұр, рамкасыз) -->
+                <div class="relative w-64 md:w-80 flex-shrink-0 flex justify-center items-center">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZhuf7OZy5PqbYtyVVy_4VPN1X85bwl83zktqvIafVzg&s" alt="Жиембет жырау" class="w-full h-auto object-cover relative z-10 opacity-90 grayscale-[20%]">
+                    <!-- Фонмен бірдей түстегі қалың ішкі көлеңке суреттің төрт бұрышын өшіріп, экранға сіңіреді -->
+                    <div class="absolute inset-0 z-20 pointer-events-none" style="box-shadow: inset 0 0 70px 40px #011a14;"></div>
+                </div>
+
+                <!-- Биография панелі -->
+                <div class="flex-grow info-card glass-panel rounded-3xl p-8 gold-border shadow-[0_0_40px_rgba(4,59,44,0.6)] flex flex-col justify-center" onclick="toggleInfoCard(this)">
+                    <h3 class="text-3xl futuristic-title gold-text mb-4 border-b border-emerald-800/50 pb-4">Жиембет жырау Бартоғашұлы</h3>
+                    <div class="text-lg futuristic-white leading-relaxed font-serif space-y-4">
+                        <p><span class="text-amber-400 font-bold">Тарихи тұлға:</span> XVII ғасырда өмір сүрген қазақтың атақты жырауы, би, батыр, әрі қолбасшы. Кіші жүздің бас биі болған.</p>
+                        <p><span class="text-amber-400 font-bold">Қызметі:</span> Есім ханның ең сенімді серіктерінің бірі болып, қазақ хандығының іргесін бекітуге, қалмақ шапқыншылығына қарсы күреске өлшеусіз үлес қосқан.</p>
+                        <p><span class="text-amber-400 font-bold">Шығармашылығы:</span> Оның жырларында ерлік, елдік, өрлік рухы бейнеленген. «Еңсегей бойлы ер Есім» толғауында ханның әділетсіздігіне қарсы шыққан батырдың қайсар, өр мінезі тамаша көрініс тапқан. Ақыры хан қаһарына ұшырап, шекараға қуылған.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Жыр мәтіні панелі (Басқанда үлкейеді) -->
+            <div class="info-card glass-panel rounded-3xl p-8 md:p-10 gold-border shadow-[0_0_40px_rgba(4,59,44,0.6)] w-full relative overflow-hidden" onclick="toggleInfoCard(this)">
+                <div class="absolute top-0 left-0 w-24 h-24 border-t-4 border-l-4 border-amber-500/30 rounded-tl-3xl m-4"></div>
+                <div class="absolute bottom-0 right-0 w-24 h-24 border-b-4 border-r-4 border-amber-500/30 rounded-br-3xl m-4"></div>
+                
+                <h2 class="text-3xl md:text-4xl futuristic-title gold-text mb-6 text-center border-b border-emerald-800/50 pb-4">«Еңсегей бойлы ер Есім»</h2>
+                    
+                    <div class="columns-1 md:columns-2 gap-10 text-lg futuristic-white leading-relaxed font-serif poem-text">
+                        <p class="mb-4">Еңсегей бойлы Ер Есім,<br>
+                        Есім, сені есірткен<br>
+                        Есіл де менім кеңесім.<br>
+                        Ес білгеннен, Есім хан,<br>
+                        Қолыңа болдым сүйесін,<br>
+                        Қолтығыңа болдым демесін.</p>
+
+                        <p class="mb-4">Ертеңгі күн болғанда,<br>
+                        Елің кеңес құрғанда,<br>
+                        Айналып ақыл табарға<br>
+                        Есіктегі ебесін,<br>
+                        Сонда, ханым, не десін?!<br>
+                        Мен жоқ болсам, Есім хан,<br>
+                        Ит түрткіні көресің.<br>
+                        Жиембет қайда дегенде,<br>
+                        Не деп жауап бересің?..</p>
+
+                        <p class="mb-4">Меніменен, ханым, ойнаспа,<br>
+                        Менің ерлігімді сұрасаң,<br>
+                        Жолбарыс пенен аюдай.<br>
+                        Өрлігімді сұрасаң,<br>
+                        Жылқыдағы асау тайыңдай.<br>
+                        Зорлығымды сұрасаң,<br>
+                        Бекіре менен жайындай.<br>
+                        Беріктігімді сұрасаң,<br>
+                        Қарағай менен қайындай.</p>
+
+                        <p class="mb-4">Көруші едім, Есім хан,<br>
+                        Ханымды күнім, сізді айымдай.<br>
+                        Сырым саған түзу-ді<br>
+                        Садаққа салған бұлыңдай.<br>
+                        Жұмыскерің мен едім<br>
+                        Сатып алған құлыңдай.<br>
+                        Жүруші едім араңда<br>
+                        Өзіңнің інің менен ұлындай...<br>
+                        Мен, өлсе, құнсыз кетер деме сен<br>
+                        Кешегі өзіңнің ұрып өлтірген<br>
+                        Тілеуберді құлыңдай!</p>
+
+                        <p class="mb-4">Тілеуберді құлың мен емес,<br>
+                        Мұның, ханым, жөн емес.<br>
+                        Менің ер екемді көргенсің,<br>
+                        Әуелден бірге жүргенсің,<br>
+                        Дегенімді қылғансың,<br>
+                        Қайратымды білгенсің.</p>
+
+                        <p class="mb-4">Ағбытпа, ханым, күннен соң,<br>
+                        Сіздің естен кеткенмен,<br>
+                        Біздің естен кеткен жоқ:<br>
+                        Қалмақтың Бөрі ханы келгенде,<br>
+                        Соқыр бурыл байталға<br>
+                        Сонда бір жайдақ мінгенсің...<br>
+                        Қалмақтың Бөрі ханы келгенде,<br>
+                        Қаланың қасы бүлгенде,<br>
+                        Хандар қалаға қылаған,<br>
+                        Сұлтандар суға сылаған,<br>
+                        Қаз мойынды ханшаңыз<br>
+                        Қалада тұрып жылаған...</p>
+
+                        <p class="mb-4">Тал шарбаққа мал сақтап,<br>
+                        Тас қалаға жан сақтап,<br>
+                        Тасқан екен мына хан!<br>
+                        Қайрылып қайыр қылуға<br>
+                        Қылығың жоқ ұнаған.<br>
+                        Қайратым қанша қайтса да,<br>
+                        Мұныңа, ханым, шыдаман!</p>
+
+                        <p class="mb-4">Арқаға қарай көшермін,<br>
+                        Алашыма ұран десермін,<br>
+                        Ат құйрығын кесермін,<br>
+                        Ат сауырын берермін,<br>
+                        Алыста дәурен сүрермін,<br>
+                        Қарамасаң, ханым, қарама,<br>
+                        Сенсіз де күнімді көрермін!</p>
+
+                        <p class="mb-4">Әмірің қатты Есім хан,<br>
+                        Бүлік салып, бұйырдың<br>
+                        Басын бер деп батырдың -<br>
+                        Қанын ішіп қанбаққа,<br>
+                        Жанын отқа салмаққа.<br>
+                        Атадан жалғыз мен емес,<br>
+                        Хан ие, ісің жол емес.<br>
+                        Жолбарыстай Жолымбет<br>
+                        Құрбандыққа қол емес.</p>
+
+                        <p class="mb-4">Жол тосып, алып кетіпті<br>
+                        Қалмақтан алмақ сыйыңды.<br>
+                        Қаһарыңды басқалы<br>
+                        Қалың елім жиылды.<br>
+                        Бастап келген өзге емес,<br>
+                        Жиенбет сынды биің-ді.<br>
+                        Малын салып алдына,<br>
+                        Әр саладан құйылды,<br>
+                        Он екі ата Байұлы<br>
+                        Бір Тәңірге сыйынды.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-domino" class="hidden animate-fade-in relative min-h-[70vh]">
+            <div class="text-center w-full mt-10">
+                <h2 class="text-3xl md:text-4xl futuristic-title gold-text mb-4 uppercase tracking-widest">Сюжеттік домино</h2>
+                
+                <div class="text-emerald-200 text-lg max-w-5xl mx-auto bg-[#02241b]/70 p-6 rounded-xl border border-emerald-800/50 mb-8 text-left shadow-[0_0_20px_rgba(4,59,44,0.5)]">
+                    <p class="text-center mb-6">
+                        <span class="font-bold text-amber-400 uppercase mr-2 text-xl">Жиембет жырау наразылығының дамуы.</span><br>
+                        Оқиғалар желісін оқу үшін қалқып тұрған кибер-домино тастарын басыңыз. <br>
+                        <span class="text-white font-semibold">Тапсырма:</span> Әр оқиғамен танысқан соң, оқушылар оқиғаға түсініктеме беріп, өзіндік әсерін баяндауы тиіс.
+                    </p>
+                    
+                    <div class="bg-[#011a14] p-5 rounded-lg border-l-4 border-amber-500">
+                        <p class="text-amber-400 font-bold mb-2"><i class="fa-solid fa-lightbulb mr-2"></i>Мысалы, 4-оқиғаға осылайша жауап береміз:</p>
+                        <p class="text-slate-300 italic leading-relaxed">
+                            "Әсері: Есім ханның әділетсіз әрекетінің айқын көрінісі және Жиембеттің тек өзі үшін емес, басқалардың да құқын қорғайтынын көрсетеді. Бұл оқиға Жиембеттің қарсылығын одан әрі күшейтеді, себебі енді ол өзінің ғана емес, елдің батырының өмірін қорғап тұр."
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 3D Домино тақтасы -->
+                <div class="domino-scene overflow-x-auto pb-16 pt-10">
+                    <div class="domino-board" id="domino-board">
+                        
+                        <!-- 1-ші тас -->
+                        <div class="domino-tile" onclick="showDominoTask(1)">
+                            <div class="domino-half">
+                                <div class="pip pip-center"></div>
+                            </div>
+                            <div class="domino-divider"></div>
+                            <div class="domino-half">
+                                <span class="domino-number">1</span>
+                            </div>
+                        </div>
+
+                        <!-- 2-ші тас -->
+                        <div class="domino-tile" onclick="showDominoTask(2)">
+                            <div class="domino-half">
+                                <div class="pip pip-tl"></div>
+                                <div class="pip pip-br"></div>
+                            </div>
+                            <div class="domino-divider"></div>
+                            <div class="domino-half">
+                                <span class="domino-number">2</span>
+                            </div>
+                        </div>
+
+                        <!-- 3-ші тас -->
+                        <div class="domino-tile" onclick="showDominoTask(3)">
+                            <div class="domino-half">
+                                <div class="pip pip-tl"></div>
+                                <div class="pip pip-center"></div>
+                                <div class="pip pip-br"></div>
+                            </div>
+                            <div class="domino-divider"></div>
+                            <div class="domino-half">
+                                <span class="domino-number">3</span>
+                            </div>
+                        </div>
+
+                        <!-- 4-ші тас -->
+                        <div class="domino-tile" onclick="showDominoTask(4)">
+                            <div class="domino-half">
+                                <div class="pip pip-tl"></div>
+                                <div class="pip pip-tr"></div>
+                                <div class="pip pip-bl"></div>
+                                <div class="pip pip-br"></div>
+                            </div>
+                            <div class="domino-divider"></div>
+                            <div class="domino-half">
+                                <span class="domino-number">4</span>
+                            </div>
+                        </div>
+
+                        <!-- 5-ші тас -->
+                        <div class="domino-tile" onclick="showDominoTask(5)">
+                            <div class="domino-half">
+                                <div class="pip pip-tl"></div>
+                                <div class="pip pip-tr"></div>
+                                <div class="pip pip-center"></div>
+                                <div class="pip pip-bl"></div>
+                                <div class="pip pip-br"></div>
+                            </div>
+                            <div class="domino-divider"></div>
+                            <div class="domino-half">
+                                <span class="domino-number">5</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Домино модаль терезесі -->
+            <div id="domino-modal" class="fixed inset-0 modal-overlay z-[100] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+                <div class="glass-panel p-10 rounded-3xl max-w-3xl w-full border-2 border-amber-400 transform scale-95 transition-transform duration-300 shadow-[0_0_50px_rgba(251,191,36,0.4)] relative" id="domino-modal-content">
+                    
+                    <div class="absolute -top-6 -left-6 w-16 h-16 bg-amber-500 rounded-lg flex items-center justify-center text-[#011a14] font-black text-4xl shadow-[0_0_20px_rgba(251,191,36,0.8)] border-4 border-[#011a14] transform -rotate-12" id="domino-number-display">
+                        1
+                    </div>
+
+                    <h3 id="domino-event" class="text-2xl font-bold text-emerald-300 mb-4 mt-2 uppercase tracking-wide">Оқиға:</h3>
+                    <p id="domino-desc" class="text-3xl futuristic-title gold-text leading-relaxed mb-6 font-serif">Тапсырма мәтіні...</p>
+                    
+                    <div class="bg-[#01120d] p-6 rounded-xl border-l-4 border-emerald-500 mb-10">
+                        <i class="fa-solid fa-quote-left text-emerald-600 text-3xl mb-2"></i>
+                        <p id="domino-quote" class="text-xl futuristic-white font-serif italic leading-relaxed">Дәйексөз...</p>
+                    </div>
+                    
+                    <div class="flex justify-end">
+                        <button onclick="closeDominoModal()" class="bg-amber-500 hover:bg-amber-400 text-[#011a14] font-bold py-3 px-10 rounded-xl transition-all shadow-[0_0_15px_rgba(251,191,36,0.5)] hover:shadow-[0_0_25px_rgba(251,191,36,0.8)] uppercase tracking-wider text-lg">
+                            Жабу
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-game" class="hidden animate-fade-in relative min-h-[70vh]">
+            <div class="pt-8 relative">
+                <div class="text-center mb-10">
+                    <h2 class="text-4xl md:text-5xl futuristic-title gold-text mb-2 tracking-wider">Толғау алаңы</h2>
+                    <p class="text-emerald-200 text-lg uppercase tracking-widest font-semibold">«Еңсегей бойлы ер Есім» толғауы бойынша</p>
+                </div>
+
+                <div class="max-w-6xl mx-auto glass-panel p-6 rounded-2xl gold-border shadow-[0_0_30px_rgba(251,191,36,0.3)]">
+                    <div class="jeopardy-grid" id="jeopardy-board">
+                        <!-- Санаттар -->
+                        <div class="jeopardy-header">Тұлғалар мен Жер</div>
+                        <div class="jeopardy-header">Теңеулер</div>
+                        <div class="jeopardy-header">Наразылық себебі</div>
+                        <div class="jeopardy-header">Жыр жолдары</div>
+                        
+                        <!-- 10 ұпай -->
+                        <div class="jeopardy-cell" onclick="openJeopardy(0, 0, this)">10</div>
+                        <div class="jeopardy-cell" onclick="openJeopardy(1, 0, this)">10</div>
+                        <div class="jeopardy-cell" onclick="openJeopardy(2, 0, this)">10</div>
+                        <div class="jeopardy-cell" onclick="openJeopardy(3, 0, this)">10</div>
+                        
+                        <!-- 20 ұпай -->
+                        <div class="jeopardy-cell" onclick="openJeopardy(0, 1, this)">20</div>
+                        <div class="jeopardy-cell" onclick="openJeopardy(1, 1, this)">20</div>
+                        <div class="jeopardy-cell" onclick="openJeopardy(2, 1, this)">20</div>
+                        <div class="jeopardy-cell" onclick="openJeopardy(3, 1, this)">20</div>
+                        
+                        <!-- 30 ұпай -->
+                        <div class="jeopardy-cell" onclick="openJeopardy(0, 2, this)">30</div>
+                        <div class="jeopardy-cell" onclick="openJeopardy(1, 2, this)">30</div>
+                        <div class="jeopardy-cell" onclick="openJeopardy(2, 2, this)">30</div>
+                        <div class="jeopardy-cell" onclick="openJeopardy(3, 2, this)">30</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ойын сұрағы модальды терезесі -->
+            <div id="game-modal" class="fixed inset-0 modal-overlay z-[100] hidden flex items-center justify-center p-4">
+                <div class="bg-[#02241b] p-10 rounded-3xl max-w-4xl w-full border-4 border-[#fbbf24] shadow-[0_0_50px_rgba(251,191,36,0.5)] text-center relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent pointer-events-none"></div>
+                    
+                    <h3 id="game-category" class="text-2xl text-amber-400 font-bold uppercase tracking-widest mb-2">Санат</h3>
+                    <div id="game-points" class="text-4xl gold-text font-black mb-8">0</div>
+                    
+                    <p id="game-question" class="text-3xl md:text-4xl futuristic-white font-serif leading-relaxed mb-12 min-h-[120px] flex items-center justify-center">Сұрақ мәтіні</p>
+                    
+                    <div id="game-answer-container" class="hidden mb-8">
+                        <p class="text-xl text-emerald-300 uppercase font-bold mb-3 border-b border-emerald-800 inline-block pb-1">Дұрыс жауап:</p>
+                        <p id="game-answer" class="text-3xl gold-text font-bold">Жауап мәтіні</p>
+                    </div>
+
+                    <div class="flex justify-center gap-4 relative z-10">
+                        <button id="btn-show-answer" onclick="showJeopardyAnswer()" class="bg-amber-600 hover:bg-amber-500 border border-amber-400 text-[#011a14] font-bold py-3 px-8 rounded-full transition-all text-lg shadow-lg">
+                            Жауапты көру
+                        </button>
+                        <button id="btn-close-question" onclick="closeJeopardyModal()" class="hidden bg-emerald-700 hover:bg-emerald-600 border border-emerald-400 text-white font-bold py-3 px-8 rounded-full transition-all text-lg shadow-[0_0_15px_rgba(16,185,129,0.4)]">
+                            Тақтаға оралу
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        let audioCtx;
+        
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSfx(type) {
+            initAudio();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            const now = audioCtx.currentTime;
+            
+            if (type === 'hover') {
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(500, now);
+                oscillator.frequency.exponentialRampToValueAtTime(700, now + 0.05);
+                gainNode.gain.setValueAtTime(0.1, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                oscillator.start(now);
+                oscillator.stop(now + 0.05);
+            } 
+            else if (type === 'domino-click') {
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(300, now);
+                oscillator.frequency.exponentialRampToValueAtTime(150, now + 0.2);
+                gainNode.gain.setValueAtTime(0.05, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                oscillator.start(now);
+                oscillator.stop(now + 0.2);
+            }
+            else if (type === 'jeopardy-open') {
+                oscillator.type = 'square';
+                oscillator.frequency.setValueAtTime(392, now); // G4
+                oscillator.frequency.setValueAtTime(493.88, now + 0.1); // B4
+                oscillator.frequency.setValueAtTime(587.33, now + 0.2); // D5
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.05, now + 0.05);
+                gainNode.gain.setValueAtTime(0.05, now + 0.25);
+                gainNode.gain.linearRampToValueAtTime(0, now + 0.3);
+                oscillator.start(now);
+                oscillator.stop(now + 0.3);
+            }
+            else if (type === 'jeopardy-answer') {
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(783.99, now); // G5
+                gainNode.gain.setValueAtTime(0.1, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1);
+                oscillator.start(now);
+                oscillator.stop(now + 1);
+            }
+        }
+
+        // Вкладкаларды ауыстыру
+        function switchTab(tabId) {
+            playSfx('hover'); 
+            
+            const tabs = ['main', 'domino', 'game'];
+            tabs.forEach(id => {
+                document.getElementById('tab-' + id).classList.add('hidden');
+                document.getElementById('btn-' + id).classList.remove('active');
+            });
+
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.getElementById('btn-' + tabId).classList.add('active');
+            
+            // Басқа бетке өткенде ақпараттық панельді бастапқы қалпына келтіру
+            document.querySelectorAll('.info-card').forEach(card => card.classList.remove('active-info-card'));
+        }
+
+        // Жыр мәтіні панелін алға шығару анимациясы
+        function toggleInfoCard(element) {
+            playSfx('hover');
+            if (element.classList.contains('active-info-card')) {
+                element.classList.remove('active-info-card');
+            } else {
+                element.classList.add('active-info-card');
+            }
+        }
+
+        // Сюжеттік домино деректері
+        const dominoData = {
+            1: { 
+                desc: "Жиембеттің Есімге өзінің бұрынғы адал қызметін еске салуы.", 
+                quote: "«Ес білгеннен, Есім хан,\nҚолыңа болдым сүйесін...»" 
+            },
+            2: { 
+                desc: "Жиембеттің өзін құл санауға қарсылық білдіріп, ерлігін дәлелдеуі.", 
+                quote: "«Меніменен, ханым, ойнаспа,\nМенің ерлігімді сұрасаң,\nЖолбарыс пенен аюдай.»" 
+            },
+            3: { 
+                desc: "Есім ханның қалмақ шапқыншылығы кезіндегі дәрменсіздігін бетіне басуы.", 
+                quote: "«Қалмақтың Бөрі ханы келгенде,\nСоқыр бурыл байталға\nСонда бір жайдақ мінгенсің...»" 
+            },
+            4: { 
+                desc: "Жолымбет батырдың өміріне қауіп төнуіне қарсы шығуы.", 
+                quote: "«Басын бер деп батырдың -\nҚанын ішіп қанбаққа...\nЖолбарыстай Жолымбет\nҚұрбандыққа қол емес.»" 
+            },
+            5: { 
+                desc: "Жиембеттің хандық биліктен бас тартып, халықты біріктіруге шақыруы.", 
+                quote: "«Арқаға қарай көшермін,\nАлашыма ұран десермін...\nҚалың елім жиылды...\nБір Тәңірге сыйынды.»" 
+            }
+        };
+
+        const dominoModal = document.getElementById('domino-modal');
+        const dominoModalContent = document.getElementById('domino-modal-content');
+
+        function showDominoTask(id) {
+            playSfx('domino-click');
+            
+            document.getElementById('domino-number-display').innerText = id;
+            document.getElementById('domino-desc').innerText = dominoData[id].desc;
+            
+            // Дәйексөздегі \n белгілерін <br> тегіне ауыстыру
+            document.getElementById('domino-quote').innerHTML = dominoData[id].quote.replace(/\n/g, '<br>');
+            
+            dominoModal.classList.remove('hidden');
+            
+            setTimeout(() => {
+                dominoModal.classList.remove('opacity-0');
+                dominoModalContent.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeDominoModal() {
+            playSfx('hover');
+            dominoModal.classList.add('opacity-0');
+            dominoModalContent.classList.add('scale-95');
+            
+            setTimeout(() => {
+                dominoModal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Толғау алаңы (Зияткерлік ойын) деректері
+        const jeopardyData = [
+            // Санат 0: Тұлғалар мен Жер
+            [
+                { q: "Бұл толғау кімге арнап айтылған?", a: "Еңсегей бойлы Ер Есім (Есім ханға)" },
+                { q: "Жиембет ханға кімнің басын бермеймін деп қарсы шықты?", a: "Жолбарыстай Жолымбеттің" },
+                { q: "Жиембет ханға қарамаса, қай жаққа қарай көшемін дейді?", a: "Арқаға қарай" }
+            ],
+            // Санат 1: Теңеулер
+            [
+                { q: "Жырау өз ерлігін қандай аңдарға теңейді?", a: "Жолбарыс пен аюдай" },
+                { q: "Өрлігін неге теңейді?", a: "Жылқыдағы асау тайыңдай" },
+                { q: "Беріктігін қандай ағаштарға теңейді?", a: "Қарағай мен қайыңдай" }
+            ],
+            // Санат 2: Наразылық себебі
+            [
+                { q: "Хан бұрын қандай құлын ұрып өлтірген еді?", a: "Тілеуберді құлын" },
+                { q: "Қалмақтың Бөрі ханы шапқанда, хан қандай атқа жайдақ мінді?", a: "Соқыр бурыл байталға" },
+                { q: "Жиембет ханның қандай әрекетін бетіне басып сынайды?", a: "Тал шарбаққа мал сақтап, Тас қалаға жан сақтағанын (дәрменсіздігін)" }
+            ],
+            // Санат 3: Жыр жолдары
+            [
+                { q: "«Есім, сені есірткен / Есіл де менім ...» жалғастырыңыз.", a: "Кеңесім" },
+                { q: "Жырау ханның арасында өзін кімдей көріп жүруші еді?", a: "Өзінің інісі мен ұлындай" },
+                { q: "Толғау соңында «Бір Тәңірге сыйынды» деген қай ел?", a: "Он екі ата Байұлы" }
+            ]
+        ];
+
+        const categories = ["Тұлғалар мен Жер", "Теңеулер", "Наразылық себебі", "Жыр жолдары"];
+        const points = [10, 20, 30];
+        
+        let currentCell = null;
+
+        function openJeopardy(catIndex, pointIndex, cellElement) {
+            if (cellElement.classList.contains('played')) return;
+            
+            playSfx('jeopardy-open');
+            currentCell = cellElement;
+            
+            const qData = jeopardyData[catIndex][pointIndex];
+            
+            document.getElementById('game-category').innerText = categories[catIndex];
+            document.getElementById('game-points').innerText = points[pointIndex];
+            document.getElementById('game-question').innerText = qData.q;
+            document.getElementById('game-answer').innerText = qData.a;
+            
+            document.getElementById('game-answer-container').classList.add('hidden');
+            document.getElementById('btn-show-answer').classList.remove('hidden');
+            document.getElementById('btn-close-question').classList.add('hidden');
+            
+            document.getElementById('game-modal').classList.remove('hidden');
+        }
+
+        function showJeopardyAnswer() {
+            playSfx('jeopardy-answer');
+            document.getElementById('game-answer-container').classList.remove('hidden');
+            document.getElementById('btn-show-answer').classList.add('hidden');
+            document.getElementById('btn-close-question').classList.remove('hidden');
+        }
+
+        function closeJeopardyModal() {
+            playSfx('hover');
+            document.getElementById('game-modal').classList.add('hidden');
+            if (currentCell) {
+                currentCell.classList.add('played');
+                currentCell = null;
+            }
+        }
+    </script>
+</body>
+</html>
